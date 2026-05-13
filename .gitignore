@@ -1,0 +1,20 @@
+# Persönliche Controller-Konfiguration (wird beim ersten Start automatisch erstellt)
+config.json
+
+# Claude Code Projekt-Einstellungen (enthalten lokale Pfade)
+.claude/
+
+# Video-Analyse (temporäre Extraktionen aus privatem Video)
+frames/
+frames_dense/
+key_brightness.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Windows
+Thumbs.db
+desktop.ini
