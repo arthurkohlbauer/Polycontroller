@@ -19,7 +19,7 @@ It translates analog stick and trigger input into precise, rapid WASD key pulses
 | | |
 |---|---|
 | **OS** | Windows 10 / 11 |
-| **Python** | 3.10 or newer (3.12 recommended) — [python.org](https://www.python.org/downloads/) |
+| **Python** | 3.10 or newer (3.13 recommended) — [python.org](https://www.python.org/downloads/) |
 | **Controller** | Any pygame-compatible gamepad (Xbox, PlayStation, Switch Pro, generic USB) |
 
 > During Python installation, check **"Add Python to PATH"**.
@@ -154,7 +154,7 @@ Er übersetzt Analog-Stick- und Trigger-Eingaben in präzise, schnelle WASD-Tast
 | | |
 |---|---|
 | **Betriebssystem** | Windows 10 / 11 |
-| **Python** | 3.10 oder neuer (3.12 empfohlen) — [python.org](https://www.python.org/downloads/) |
+| **Python** | 3.10 oder neuer (3.13 empfohlen) — [python.org](https://www.python.org/downloads/) |
 | **Controller** | Jedes pygame-kompatibles Gamepad (Xbox, PlayStation, Switch Pro, generisches USB) |
 
 > Bei der Python-Installation **„Add Python to PATH"** anhaken.
