@@ -72,17 +72,67 @@ polycontroller needs to know which button/axis on your controller corresponds to
 
 ### Settings
 
+PolyTrack steering is **binary** — a key is either full-lock or off. Analog feel comes purely from *how fast you tap*. polycontroller is built to be tuned to the smallest detail: **every parameter exists once as a global default and again, independently, for each action** (Steer / Throttle / Brake / Reset). That's **28 knobs per action × 5 scopes** plus app-wide options — well over a hundred settings, organised into collapsible sections so the window stays manageable.
+
+#### How it's organised
+
+- **App** — window/runtime options (see below).
+- **Global defaults** — the baseline values every action inherits.
+- **Per action** (Steer, Throttle, Brake, Reset) — each has its own collapsible panel. Tick **Override defaults** to give that action its own values; leave it off and it follows the globals.
+- **Profiles** — save complete setups by name, switch between them instantly, and **Export / Import** them as `.json` to share or back up. Great for different cars, tracks, or controllers.
+
+#### Per-action parameters
+
 | Setting | What it does | Default |
 |---|---|---|
-| **Deadzone** | Ignores tiny stick movements near center. Increase if your car drifts without input. | 0.10 |
-| **Full press at** | Stick percentage above which the key is held continuously (no pulsing). | 0.85 |
-| **Tap time (ms)** | How long each key press lasts. 16 ms = one browser frame at 60 fps — the minimum the game reliably detects. | 16 |
-| **Fine zone** | Shape of the control curve at low stick deflection. Lower = more gentle, higher = more linear. | 0.70 |
+| **Enabled** | Turns the action on/off entirely. | on |
+| **Invert** | Flips the input direction. | off |
+| **Mode** | `pulse` = PWM tapping, `hold` = digital on/off, `toggle` = press latches on/off. | pulse |
+| **Center trim** | Shifts the neutral point — fixes a stick that drifts off-center. | 0.00 |
+| **Deadzone** | Ignores tiny stick movements near center. Raise if the car drifts without input. | 0.10 |
+| **Deadzone type** | `scaled` rescales input past the deadzone smoothly; `hard` cuts it raw. | scaled |
+| **Max input at** | Input reaching this counts as 100% (a shorter, snappier stick throw). | 1.00 |
+| **Smoothing** | Low-pass filter on the input to kill jitter. Higher = smoother but laggier. | 0.00 |
+| **Full press at** | Input level above which the key is held continuously (no pulsing). | 0.85 |
+| **Curve** | Stick → tap-rate shape: `twozone` (PolyTrack-tuned), `linear`, `power`, `expo`, `scurve`. | twozone |
+| **Sensitivity** | Overall output gain. >1 = stronger everywhere, <1 = gentler. | 1.00 |
+| **Gamma** | Final response curve on the output. <1 = stronger, >1 = gentler. | 1.00 |
+| **Min strength** | Anti-deadzone: minimum tap-rate the instant the action engages. | 0.00 |
+| **Max strength** | Ceiling on tap-rate — caps how hard the action can ever push. | 1.00 |
+| **Boost above** | Input % above which a boost kicks in (1.0 = off). | 1.00 |
+| **Boost ×** | *"From X% it's this much stronger"* — multiplier applied above **Boost above**. | 1.00 |
+| **L/R balance** | *(steer)* Strength bias between left and right. | 0.00 |
+| **Mid point** | *(twozone)* Input where the "fine zone" ends and the "power zone" begins. | 0.50 |
+| **Mid duty** | *(twozone)* Tap rate reached exactly at the mid point. | 0.45 |
+| **Fine zone** | *(twozone)* Curve shape *below* the mid point. Lower = gentler at small inputs. | 0.70 |
+| **Power zone** | *(twozone)* Curve shape *above* the mid point. Lower = snappier. | 0.70 |
+| **Expo** | *(power / expo / scurve)* Steepness of the curve. | 0.60 |
+| **Tap time (ms)** | How long each key press lasts. 16 ms = one browser frame at 60 fps. | 16 |
+| **Min gap (ms)** | Floor on the pause between taps → caps *maximum* tap frequency. 0 = off. | 0 |
+| **Max gap (ms)** | Ceiling on the pause between taps → forces a *minimum* tap rate. 0 = off. | 0 |
+| **Turbo (Hz)** | When held, rapid-fire at this rate instead of a continuous press. 0 = off. | 0 |
+| **Engage delay (ms)** | Input must persist this long before the key fires (debounce). | 0 |
+| **Release delay (ms)** | Keeps the key driven this long after input drops (sticky / linger). | 0 |
+
+#### Output keys
+
+Each action has editable **key** fields — type any letter, or a name like `space`, `enter`, `shift`, `up`, `left`. Steer has separate **Left key** / **Right key**, and every action has an optional **Key 2 / combo** that fires alongside the main key (e.g. `shift` for a boost combo). This is how you adapt polycontroller to any WASD or arrow-key browser game.
+
+#### App options
+
+| Setting | What it does | Default |
+|---|---|---|
+| **Poll rate (Hz)** | How often the controller is read and keys updated. Higher = crisper, more CPU. | 200 |
+| **Always on top** | Pins the window above the browser. | off |
+| **Autosave** | Writes `config.json` automatically on every change. | off |
+| **Autostart** | Begins converting immediately on launch (if a controller is present). | off |
 
 **Click on any value number** to type in an exact value instead of using the slider.
 
-**Save** stores your settings to `config.json`. They are loaded automatically next time.  
-**↺** resets all settings to defaults (bindings stay).
+**Save** stores everything (all profiles) to `config.json`, loaded automatically next time.  
+**↺** resets the *active profile* to defaults (other profiles are untouched).
+
+> Old `config.json` files are upgraded automatically on first launch — your existing settings become the "Default" profile.
 
 ---
 
@@ -207,17 +257,67 @@ polycontroller muss wissen, welche Taste / Achse am Controller welcher Aktion en
 
 ### Einstellungen
 
+PolyTrack-Lenkung ist **binär** — eine Taste ist entweder voll eingeschlagen oder aus. Das analoge Gefühl entsteht allein durch *wie schnell du tippst*. polycontroller ist auf maximale Feinjustierung ausgelegt: **jeder Parameter existiert einmal als globaler Standard und nochmal, unabhängig, pro Aktion** (Lenken / Gas / Bremse / Neustart). Das sind **28 Regler pro Aktion × 5 Ebenen** plus App-weite Optionen — weit über hundert Einstellungen, in ausklappbaren Sektionen organisiert.
+
+#### Aufbau
+
+- **App** — Fenster-/Laufzeit-Optionen (siehe unten).
+- **Globale Standards** — die Basiswerte, die jede Aktion erbt.
+- **Pro Aktion** (Lenken, Gas, Bremse, Neustart) — jede mit eigenem ausklappbarem Panel. **Eigene Werte** anhaken, um der Aktion eigene Werte zu geben; sonst folgt sie den globalen.
+- **Profile** — komplette Setups unter Namen speichern, blitzschnell wechseln und als `.json` **exportieren / importieren**. Ideal für verschiedene Autos, Strecken oder Controller.
+
+#### Parameter pro Aktion
+
 | Einstellung | Funktion | Standard |
 |---|---|---|
-| **Deadzone** | Kleine Stick-Bewegungen in der Mitte ignorieren. Erhöhen wenn das Auto ohne Eingabe driftet. | 0.10 |
-| **Vollgas ab** | Ab welchem Stick-Prozentsatz die Taste dauerhaft gehalten wird (kein Pulsieren mehr). | 0.85 |
-| **Tap-Dauer (ms)** | Wie lange jeder Tastendruck dauert. 16 ms = ein Browser-Frame bei 60 fps — das Minimum, das das Spiel zuverlässig erkennt. | 16 |
-| **Fein-Zone** | Form der Steuerkurve bei kleinem Stick-Ausschlag. Niedriger = sanfter, höher = linearer. | 0.70 |
+| **Aktiv** | Schaltet die Aktion komplett an/aus. | an |
+| **Invertieren** | Kehrt die Eingaberichtung um. | aus |
+| **Modus** | `pulse` = PWM-Tippen, `hold` = digital an/aus, `toggle` = Druck schaltet um. | pulse |
+| **Mitten-Trim** | Verschiebt den Nullpunkt — gegen einen driftenden Stick. | 0.00 |
+| **Deadzone** | Kleine Stick-Bewegungen in der Mitte ignorieren. Erhöhen wenn das Auto driftet. | 0.10 |
+| **Deadzone-Typ** | `scaled` skaliert nach der Deadzone weich; `hard` schneidet hart ab. | scaled |
+| **Max. Eingabe ab** | Eingabe ab diesem Wert zählt als 100% (kürzerer, direkterer Stick-Weg). | 1.00 |
+| **Glättung** | Tiefpass auf die Eingabe gegen Jitter. Höher = ruhiger, aber träger. | 0.00 |
+| **Vollgas ab** | Ab welchem Eingabewert die Taste dauerhaft gehalten wird. | 0.85 |
+| **Kurve** | Stick→Tipprate-Form: `twozone` (PolyTrack-getunt), `linear`, `power`, `expo`, `scurve`. | twozone |
+| **Sensitivität** | Gesamt-Gain. >1 = überall stärker, <1 = sanfter. | 1.00 |
+| **Gamma** | Finale Kennlinie auf die Ausgabe. <1 = stärker, >1 = sanfter. | 1.00 |
+| **Min. Stärke** | Anti-Deadzone: minimale Tipprate, sobald die Aktion greift. | 0.00 |
+| **Max. Stärke** | Deckel der Tipprate — begrenzt wie hart die Aktion je drückt. | 1.00 |
+| **Boost ab** | Eingabe-% ab dem ein Boost greift (1.0 = aus). | 1.00 |
+| **Boost ×** | *„Ab X% wirkt es so viel stärker"* — Multiplikator oberhalb von **Boost ab**. | 1.00 |
+| **L/R-Balance** | *(Lenken)* Stärke-Verschiebung zwischen links und rechts. | 0.00 |
+| **Mittelpunkt** | *(twozone)* Eingabe, an der die „Fein-Zone" endet und die „Power-Zone" beginnt. | 0.50 |
+| **Mittel-Duty** | *(twozone)* Tipprate genau am Mittelpunkt. | 0.45 |
+| **Fein-Zone** | *(twozone)* Kurvenform *unterhalb* des Mittelpunkts. Niedriger = sanfter. | 0.70 |
+| **Power-Zone** | *(twozone)* Kurvenform *oberhalb* des Mittelpunkts. Niedriger = direkter. | 0.70 |
+| **Expo** | *(power / expo / scurve)* Steilheit der Kurve. | 0.60 |
+| **Tap-Dauer (ms)** | Wie lange jeder Tastendruck dauert. 16 ms = ein Browser-Frame bei 60 fps. | 16 |
+| **Min. Pause (ms)** | Untergrenze der Pause zwischen Taps → begrenzt die *maximale* Tipprate. 0 = aus. | 0 |
+| **Max. Pause (ms)** | Obergrenze der Pause zwischen Taps → erzwingt eine *minimale* Tipprate. 0 = aus. | 0 |
+| **Turbo (Hz)** | Beim Halten Dauerfeuer mit dieser Rate statt Dauerdruck. 0 = aus. | 0 |
+| **Aktiv-Verzög. (ms)** | Eingabe muss so lange anliegen, bevor die Taste auslöst (Entprellung). | 0 |
+| **Loslass-Verzög. (ms)** | Hält die Taste so lange nach, nachdem die Eingabe wegfällt (klebrig). | 0 |
+
+#### Ausgabe-Tasten
+
+Jede Aktion hat editierbare **Tasten**-Felder — beliebiger Buchstabe oder ein Name wie `space`, `enter`, `shift`, `up`, `left`. Lenken hat getrennte **Taste links** / **Taste rechts**, und jede Aktion hat eine optionale **Taste 2 / Combo**, die zusammen mit der Haupttaste auslöst (z. B. `shift` für eine Boost-Combo). So passt du polycontroller an jedes WASD- oder Pfeiltasten-Spiel an.
+
+#### App-Optionen
+
+| Einstellung | Funktion | Standard |
+|---|---|---|
+| **Polling-Rate (Hz)** | Wie oft der Controller gelesen und Tasten aktualisiert werden. Höher = direkter, mehr CPU. | 200 |
+| **Immer im Vordergrund** | Heftet das Fenster über den Browser. | aus |
+| **Autospeichern** | Schreibt `config.json` automatisch bei jeder Änderung. | aus |
+| **Autostart** | Startet die Umwandlung sofort beim Programmstart (wenn ein Controller da ist). | aus |
 
 **Auf die Zahl klicken** um einen genauen Wert einzutippen statt den Slider zu nutzen.
 
-**Speichern** schreibt die Einstellungen in `config.json`. Werden beim nächsten Start automatisch geladen.  
-**↺** setzt alle Einstellungen zurück (Tastenbelegung bleibt).
+**Speichern** schreibt alles (alle Profile) in `config.json`, wird beim nächsten Start automatisch geladen.  
+**↺** setzt das *aktive Profil* auf Standard zurück (andere Profile bleiben unberührt).
+
+> Alte `config.json`-Dateien werden beim ersten Start automatisch migriert — deine bisherigen Einstellungen werden zum „Default"-Profil.
 
 ---
 
